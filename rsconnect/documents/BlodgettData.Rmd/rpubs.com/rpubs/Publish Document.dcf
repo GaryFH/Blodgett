@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/338023/da6af7f7d9ce4f5185ebca6bb28685e9
+bundleId: https://api.rpubs.com/api/v1/document/338023/da6af7f7d9ce4f5185ebca6bb28685e9
+url: http://rpubs.com/GaryFH/338023
+when: 1517528132.47796

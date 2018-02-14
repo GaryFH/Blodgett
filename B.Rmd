@@ -1,0 +1,28 @@
+---
+title: "BoldgettData1"
+author: "GaryFH"
+date: "December 2, 2017"
+output: html_document
+---
+
+####Set up
+```{r warning=FALSE,message=FALSE}
+library(dplyr)
+library(ggplot2)
+
+```
+
+
+###Load data from working directory
+
+```{r warning=FALSE,message=FALSE}
+dfBonde1<-tbl_df(read.csv("Diarrhrea Trend Bonde Dispensary 2012-2015 (outside study area).csv"))
+dfKatito1<-tbl_df(read.csv("Diarrhrea Trend Katito Health Center 2012-2015 (-2012) .csv" ))
+dfKibogo1<-tbl_df(read.csv("Diarrhrea Trend Kibogo Dispensary 2012-2015.csv" ))
+dfPapOnditi1<-tbl_df(read.csv("Diarrhrea Trend Pap Onditi Hospital Manthly Ave 2009-2016.csv" ))
+dfRae1<-tbl_df(read.csv("Diarrhrea Trend Rae Dispensary 2012-2015 (outside study area) .csv" ))
+dfDissertation1<-tbl_df(read.csv("Dissertation Full Data from the Questionaire 9-26-17_Katy.csv"))
+
+
+```
+

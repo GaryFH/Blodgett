@@ -1,0 +1,122 @@
+---
+title: "BoldgettData1"
+author: "GaryFH"
+date: "December 2, 2017"
+output: html_document
+---
+
+####Set up
+```{r warning=FALSE,message=FALSE}
+suppressWarnings(library(dplyr))
+suppressWarnings(library(ggplot2))
+suppressWarnings(library(tidyr))
+suppressWarnings(library(ggmap))
+```
+
+
+###Load data from working directory
+
+```{r warning=FALSE,message=FALSE}
+dfBonde1<-tbl_df(read.csv("Diarrhrea Trend Bonde Dispensary 2012-2015 (outside study area).csv"))
+dfKatito1<-tbl_df(read.csv("Diarrhrea Trend Katito Health Center 2012-2015 (-2012) .csv" ))
+dfKibogo1<-tbl_df(read.csv("Diarrhrea Trend Kibogo Dispensary 2012-2015.csv" ))
+dfPapOnditi1<-tbl_df(read.csv("Diarrhrea Trend Pap Onditi Hospital Manthly Ave 2009-2016.csv" ))
+dfRae1<-tbl_df(read.csv("Diarrhrea Trend Rae Dispensary 2012-2015 (outside study area) .csv" ))
+dfDissertation1<-tbl_df(read.csv("Dissertation Full Data from the Questionaire 9-26-17_Katy.csv"))
+
+
+```
+
+
+###Work with data frames
+
+```{r warning=FALSE,message=FALSE}
+
+
+dfBonde1<-rename(dfBonde1,Total=Total.Bonde)
+dfBonde1<-mutate(dfBonde1,Datasource="BondeDispensary")
+
+dfKatito1<-mutate(dfKatito1,Datasource="KatitoHealth")
+
+dfKibogo1<-rename(dfKibogo1,Total=Total.Kibogo)
+dfKibogo1<-mutate(dfKibogo1,Datasource="KibogoDispensary")
+
+dfPapOnditi1<-drop_na(dfPapOnditi1)
+dfPapOnditi1<-mutate(dfPapOnditi1,Datasource="PapOnditiHospital")
+
+
+dfRae1<-mutate(dfRae1,Datasource="RaeDispensary")
+
+dfTotal<-bind_rows(dfBonde1,dfKatito1,dfKibogo1,dfRae1)
+
+
+dfDiss2<-filter(dfDissertation1, Q5e..illness..=="No")
+dfDiss2<-mutate(dfDiss2,Illness=0)
+dfDiss3<-filter(dfDissertation1, Q5e..illness..!="No")
+dfDiss3<-mutate(dfDiss3,Illness=1)
+dfDiss<-bind_rows(dfDiss2,dfDiss3)
+dfDiss<-select(dfDiss,Illness,Location:Q5c..is.there.a.safe.water.storage.vessel.in.your.home..)
+
+```
+
+
+###Look at dataframes
+
+```{r warning=FALSE,message=FALSE}
+dfBonde1
+dfKatito1
+dfKibogo1
+dfPapOnditi1
+dfRae1
+dfTotal
+dfDiss
+
+```
+
+
+
+
+
+
+###Plots
+
+
+```{r warning=FALSE,message=FALSE}
+
+dfDissb<-group_by(dfDiss,Location)
+aaa<-summarise(dfDissb,sum(Illness))
+plot(aaa)
+
+
+dfTotalb<-mutate(dfTotal,Ratio=100*(X.5.1/Total))
+
+gplot<-ggplot(data=dfTotalb,aes(x=Datasource,y=Ratio))+ #theme_minimal()+
+  geom_boxplot(color=c("yellow","orange","magenta","blue"))+
+  #geom_point(aes(size=FourthVariable),alpha=.4,color=c("yellow","orange","magenta","blue")+
+  #geom_smooth(data=df66,aes(x=x,y=y, color=ColorChoice), method = lm,se=F)+
+  labs(title="Rick Data")+
+  labs(y="Percentage - X.5.1 of Total",x="Data source")
+
+gplot
+
+
+```
+
+
+
+```{r warning=FALSE,message=FALSE}
+#kenya<-get_map("kisumu,kenya",zoom=12)
+#p<-ggmap(kenya)
+#dfDiss4<-select(dfDiss,Respondent,Longitude,Latitude)
+
+#gplot3<-p+geom_point(data=dfDiss,aes(Longitude,Latitude))+aes(dfDiss,color=Location)
+#gplot3<-p+geom_point(data=dfDiss,aes(Longitude,Latitude))
+#gplot3<-p+geom_point(data=dfDiss,aes(x=Longitude,y=Latitude,color=Location))
+
+#gplot3
+```
+
+
+
+
+
