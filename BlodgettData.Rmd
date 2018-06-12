@@ -2,7 +2,7 @@
 title: "BlodgettData"
 author: "GaryFH"
 date: "December 5, 2017"
-output: html_document
+output: md_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -18,11 +18,14 @@ output: html_document
 suppressWarnings(library(dplyr))
 suppressWarnings(library(ggplot2))
 suppressWarnings(library(tidyr))
-suppressWarnings(library(ggmap))
+#suppressWarnings(library(ggmap))
 suppressWarnings(library(statsr))
-suppressWarnings(library(pander))
-suppressWarnings(library(pwr))
+#suppressWarnings(library(pander))
+#suppressWarnings(library(pwr))
 suppressWarnings(library(gridExtra))
+suppressWarnings(library(foreign))
+#suppressWarnings(library(xlsx))
+#suppressWarnings(library(rJava))
 source('http://bit.ly/dasi_inference')
 ```
 
@@ -155,7 +158,7 @@ PercentSafeWaterAfter
 ###Make a new database where water safety is compared to training level and run a statistical analysis showing training/help's influence on water safety.   Note that the p-value is effectively zero thus indicating overwhelming evidence that the training provided in this study has a positive influence on water safety.
 
 ```{r warning=FALSE,message=FALSE}
-dfbefore<-select(df9,BeforeTrainingWaterQuality,Location)
+dfbefore<-select(df9,BeforeTrainingWaterQuality,Location,WaterStorageVessel,TreatmentMethod,BelieveYourWaterSafe)
 dfbefore<-rename(dfbefore,WaterSafety=BeforeTrainingWaterQuality)
 dfbefore<-mutate(dfbefore,Training=0)
 dfafter<-select(df9,Home_SafeColiNumber,Location)
@@ -176,6 +179,66 @@ t.test(WaterSafety~Training,data = dft)
 #inference(y=WaterSafety,x=Training,data=dft,statistic="mean",type="ht",null=0,alternative="twosided",method="theoretical")
 #inference(y=WaterSafety,x=Training,data=dft,statistic="mean",type="ci",method="theoretical")
 ```
+
+##RQ1
+###Is there an association between the change in diarrhea morbidity in Lower Nyakach, Kenya, and the novel evidence-based microbiology intervention?  Due to medical privacy issues - there is no practical way to directly correlate evidence-based microbiology intervention (with it's associated training) to lower diarrhea morbidity,  this study uses the reasonable assumption that consuming safe water vrs contaminated water is associated to lower diarrhea morbidity.
+####Create XLSX,SPSS&txt file from dft
+```{r warning=FALSE,message=FALSE}
+#write.foreign(dft, "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dft.txt", "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dft.sps",   package="SPSS")
+
+#write.xlsx(dft, "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dft.xlsx")
+
+
+```
+
+
+##RQ2
+###Is there an association in WHO risk of waterborne disease and the possession of a safe water vessel.
+####Create XLSX,SPSS&txt file from dft2
+```{r warning=FALSE,message=FALSE}
+dft2b<-select(dftotal,WaterSafety,WaterStorageVessel)
+dft2<-filter(dft2b,WaterStorageVessel=="Ceramic wide mouth"|WaterStorageVessel=="Ceramic narrow mouth"|WaterStorageVessel=="Ceramic narrow mouth with spigot")
+dft2$WaterStorageVessel<-factor(dft2$WaterStorageVessel)
+dft2c<-group_by(dft2,WaterStorageVessel)
+summarise(dft2c,mean(WaterSafety))
+dft2<-mutate(dft2,vessel=(ifelse(WaterStorageVessel=="Ceramic wide mouth",0,1)))
+fit<-lm(WaterSafety~vessel,dft2)
+summary(fit)
+dft2spigot<-filter(dft2b,WaterStorageVessel=="Ceramic narrow mouth"|WaterStorageVessel=="Ceramic narrow mouth with spigot")
+dft2spigot<-mutate(dft2spigot,vessel=(ifelse(WaterStorageVessel=="Ceramic narrow mouth",0,1)))
+fit<-lm(WaterSafety~vessel,dft2spigot)
+summary(fit)
+#t.test(WaterSafety~vessel,dft2spigot)
+
+#write.foreign(dft2wide, "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dft2wide.txt", "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dftwide.sps",   package="SPSS")
+
+##write.xlsx(dft2spigot, "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dft2spigot.xlsx")
+
+```
+
+
+##RQ3
+###Is there a difference in WHO risk between solar pasteurization users and chlorine bleach users?
+####Create XLSX,SPSS&txt file from dft3
+```{r warning=FALSE,message=FALSE}
+
+dft3b<-select(dftotal,WaterSafety,TreatmentMethod)
+dft3b<-na.omit(dft3b)
+dft3b<-filter(dft3b,TreatmentMethod=="Add bleach/chlorine"|TreatmentMethod=="Boil")
+dft3b$TreatmentMethod<-factor(dft3b$TreatmentMethod)
+
+dft3c<-group_by(dft3b,TreatmentMethod)
+summarise(dft3c,mean(WaterSafety))
+dft3<-mutate(dft3b,Method=(ifelse(TreatmentMethod=="Boil",0,1)))
+fit<-lm(WaterSafety~Method,dft3)
+summary(fit)
+
+
+#write.xlsx(dft3, "c:/Users/gary/Dropbox/Rstudio/R data files/Blodgett/Blodgett/dft3.xlsx")
+
+
+```
+
 
 
 ```{r warning=FALSE,message=FALSE}
